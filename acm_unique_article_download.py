@@ -17,9 +17,7 @@ OUTPUT_CSV = "downloaded_articles.csv"
 
 os.makedirs(SAVE_DIR, exist_ok=True)
 
-# -------------------------------
-# Utility
-# -------------------------------
+
 
 def extract_doi(url):
     match = re.search(r'10\.\d{4,9}/[-._;()/:A-Z0-9]+', url, re.I)
@@ -34,9 +32,7 @@ def log_failed(url):
     with open(FAILED_LOG, "a") as f:
         f.write(url + "\n")
 
-# -------------------------------
-# 🔥 LOAD DOWNLOADED DOIs FROM CSV (NOT FILENAMES)
-# -------------------------------
+
 
 def get_downloaded_dois():
     if not os.path.exists(OUTPUT_CSV):
@@ -45,9 +41,7 @@ def get_downloaded_dois():
     df = pd.read_csv(OUTPUT_CSV)
     return set(df["doi"].dropna().tolist())
 
-# -------------------------------
-# Extract Title
-# -------------------------------
+
 
 def extract_title(soup):
     h1 = soup.find("h1")
@@ -60,9 +54,7 @@ def extract_title(soup):
 
     return None
 
-# -------------------------------
-# Cloudflare + Cookies
-# -------------------------------
+
 
 def wait_for_verification(sb, timeout=30):
     start = time.time()
@@ -84,9 +76,7 @@ def accept_cookies(sb):
     except:
         pass
 
-# -------------------------------
-# LOGIN
-# -------------------------------
+
 
 def login(sb):
     sb.open("https://dl.acm.org/")
@@ -110,9 +100,7 @@ def login(sb):
 
     wait_for_verification(sb)
 
-# -------------------------------
-# Save Rendered HTML (TITLE-BASED)
-# -------------------------------
+
 
 def save_rendered_html(sb):
     sb.wait_for_ready_state_complete()
@@ -136,7 +124,7 @@ def save_rendered_html(sb):
     filename_base = clean_text(title)
     filepath = os.path.join(SAVE_DIR, filename_base + ".html")
 
-    # Fix src
+    
     for tag in soup.find_all(src=True):
         src = tag["src"]
         if src.startswith("/"):
@@ -144,7 +132,7 @@ def save_rendered_html(sb):
         elif src.startswith("//"):
             tag["src"] = "https:" + src
 
-    # Fix href
+    
     for tag in soup.find_all(href=True):
         href = tag["href"]
         if href.startswith("/"):
@@ -154,9 +142,6 @@ def save_rendered_html(sb):
 
     return filepath, soup, doi
 
-# -------------------------------
-# Filter Remaining URLs
-# -------------------------------
 
 def build_remaining_dataframe(df, downloaded_dois):
     remaining_rows = []
@@ -172,9 +157,6 @@ def build_remaining_dataframe(df, downloaded_dois):
 
     return pd.DataFrame(remaining_rows)
 
-# -------------------------------
-# MAIN
-# -------------------------------
 
 df = pd.read_csv(CSV_FILE)
 
@@ -184,7 +166,7 @@ print(f"Found {len(downloaded_dois)} already downloaded articles (via CSV)")
 df_remaining = build_remaining_dataframe(df, downloaded_dois)
 print(f"Remaining URLs to process: {len(df_remaining)}")
 
-# CSV logging
+
 csv_exists = os.path.exists(OUTPUT_CSV)
 csv_file = open(OUTPUT_CSV, "a", newline="", encoding="utf-8")
 csv_writer = csv.writer(csv_file)
@@ -222,7 +204,7 @@ with SB(uc=True, headless=True) as sb:
 
             print(f"Saved: {filepath}")
 
-            # ✅ track DOI in CSV (THIS is your resume system)
+            
             csv_writer.writerow([doi, url, os.path.basename(filepath)])
             csv_file.flush()
 
