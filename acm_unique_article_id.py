@@ -3,22 +3,21 @@ import re
 import csv
 from bs4 import BeautifulSoup
 
-# Folder containing your HTML files
+
 HTML_FOLDER = r"C:\Users\kaila\Downloads\unique_articles_html"
 
-# Output CSV file
+
 OUTPUT_CSV = "acm_unique_article_id.csv"
 
-# Regex to find ACM DOI URLs
+
 DOI_PATTERN = re.compile(r"https://dl\.acm\.org/doi/(10\.\d{4,9}/[^\s\"<>]+)")
 
 
 def extract_doi_from_html(file_path):
-    """Extract DOI from an HTML file."""
     with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
         soup = BeautifulSoup(f, "html.parser")
 
-    # Search all links first
+    
     for a_tag in soup.find_all("a", href=True):
         match = DOI_PATTERN.search(a_tag["href"])
         if match:
@@ -65,7 +64,7 @@ def main():
             seen.add(doi)
             unique_rows.append(row)
 
-    # Write to CSV
+    
     with open(OUTPUT_CSV, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["filename", "doi"])
