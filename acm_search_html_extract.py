@@ -188,9 +188,9 @@ if ws.max_row == 1:
 
 current_row = ws.max_row + 1
 
-for letter in ascii_uppercase:  # Letters A-Z
-    for year in range(2009, 2015):  # Years 1990-2009
-        for month in range(1, 13):  # Months 1-12
+for letter in ascii_uppercase:  
+    for year in range(2009, 2015): 
+        for month in range(1, 13): 
             file_name = os.path.join(html_folder, f"acm_{letter}_{year}_{month}_to_{year}_{month}_page_1.html")
             if not os.path.exists(file_name):
                 continue
@@ -216,7 +216,7 @@ for letter in ascii_uppercase:  # Letters A-Z
                     sheet_name = f"Sheet{sheet_index}"
                     ws = wb.create_sheet(title=sheet_name)
 
-                    print(f"⚠️ Creating new sheet: {sheet_name}")
+                    print(f"Creating new sheet: {sheet_name}")
 
     # Write headers
                 for header, col in COLUMN_MAP.items():
